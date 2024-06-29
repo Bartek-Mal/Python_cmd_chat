@@ -15,11 +15,35 @@ def broadcast(message):
     for client in clients:
         client.send(message)
         
+def list_clients(client):
+    client_list = "Connected clients:\n"
+    for nickname in nicknames:
+        client_list += nickname + "\n"
+    client.send(client_list.encode('ascii'))
+
 def handle(client):
     while True:
         try:
-            message = client.recv(1024)
-            broadcast(message)
+            message = client.recv(1024).decode('ascii')
+            if message == "/list":
+                list_clients(client)
+            elif message.startswith("/help"):
+                help_message = (
+                    "/list - list all connected clients\n"
+                    "/nick <new_nickname> - change your nickname\n"
+                    "/whisper <nickname> <message> - send a private message\n"
+                    "/kick <nickname> - kick a user (admin only)\n"
+                    "/ban <nickname> - ban a user (admin only)\n"
+                )
+                client.send(help_message.encode('ascii'))
+            elif message.startswith("/nick "):
+                new_nickname = message.split(" ", 1)[1]
+                index = clients.index(client)
+                old_nickname = nicknames[index]
+                nicknames[index] = new_nickname
+                broadcast(f'{old_nickname} changed their nickname to {new_nickname}'.encode('ascii'))
+            else:
+                broadcast(message.encode('ascii'))
         except:
             index = clients.index(client)
             clients.remove(client)
@@ -43,7 +67,7 @@ def receive():
         broadcast("{} joined!".format(nickname).encode('ascii'))
         client.send('Connected to server!'.encode('ascii'))
         
-        thread = threading.Thread(target=handle, args=(client))
+        thread = threading.Thread(target=handle, args=(client,))
         thread.start()
         
 print("Server is listening...")

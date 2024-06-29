@@ -15,13 +15,24 @@ def receive():
             else:
                 print(message)
         except:
-            print("An error occured!")
+            print("An error occurred!")
             client.close()
             break
+
 def write():
+    global nickname
     while True:
-        message = '{}: {}'.format(nickname, input(''))
-        client.send(message.encode('ascii'))
+        message = input('')
+        if message == "/list":
+            client.send(message.encode('ascii'))
+        elif message == "/help":
+            client.send(message.encode('ascii'))
+        elif message.startswith("/nick "):
+            new_nickname = message.split(" ", 1)[1]
+            client.send(f'/nick {new_nickname}'.encode('ascii'))
+        else:
+            message = '{}: {}'.format(nickname, message)
+            client.send(message.encode('ascii'))
 
 receive_thread = threading.Thread(target=receive)
 receive_thread.start()
