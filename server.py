@@ -53,17 +53,29 @@ def handle(client):
                     sender_nickname = nicknames[sender_index]
                     private_message = f"[Whisper from] {sender_nickname}: {message}"
                     whisper_to_client.send(private_message.encode('ascii'))
+            elif message.startswith("/kick ") and nicknames[clients.index(client)] == 'Admin':
+                parts = message.split(" ",1)
+                nickname_to_kick = parts[1]
+                if nickname_to_kick in nicknames:
+                    index = nicknames.index(nickname_to_kick)
+                    kick_client = clients[index]
+                    kick_client.send('You have been kicked by the Admin!'.encode('ascii'))
+                    kick_client.close()
+                    clients.remove(kick_client)
+                    nicknames.remove(nickname_to_kick)
+                    broadcast(f'{nickname_to_kick} has been kicked from the server!!'.encode('ascii'))
             else:
                 broadcast(message.encode('ascii'))
         except:
-            index = clients.index(client)
-            clients.remove(client)
-            client.close()
-            nickname = nicknames[index]
-            broadcast('{} left!'.format(nickname).encode('ascii'))
-            nicknames.remove(nickname)
+            if client in clients:
+                index = clients.index(client)
+                clients.remove(client)
+                client.close()
+                nickname = nicknames[index]
+                broadcast('{} left!'.format(nickname).encode('ascii'))
+                nicknames.remove(nickname)
             break
-        
+
 def receive():
     while True:
         client, address = server.accept()
@@ -71,6 +83,14 @@ def receive():
 
         client.send('NICK'.encode('ascii'))
         nickname = client.recv(1024).decode('ascii')
+        if nickname == 'Admin':
+            client.send('PASS'.encode('ascii'))
+            password = client.recv(1024).decode('ascii')
+            if password != 'Admin':  
+                client.send('DENIED'.encode('ascii'))
+                client.close()
+                continue
+            
         nicknames.append(nickname)
         clients.append(client)
 

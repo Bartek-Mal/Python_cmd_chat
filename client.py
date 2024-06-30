@@ -12,6 +12,17 @@ def receive():
             message = client.recv(1024).decode('ascii')
             if message == 'NICK':
                 client.send(nickname.encode('ascii'))
+            elif message == 'PASS':
+                password = input("Enter Admin password: ")
+                client.send(password.encode('ascii'))
+            elif message == 'DENIED':
+                print("Incorrect password! Connection denied.")
+                client.close()
+                break
+            elif message == 'You have been kicked by the Admin!':
+                print(message)
+                client.close()
+                break
             else:
                 print(message)
         except:
@@ -35,6 +46,10 @@ def write():
             whisper_to = parts[1]
             private_message = parts[2]
             client.send(f'/whisper {whisper_to} {private_message}'.encode('ascii'))
+        elif message.startswith("/kick ") and nickname == 'Admin':
+            parts = message.split(" ",1)
+            nickname_to_kick = parts[1]
+            client.send(f'/kick {nickname_to_kick}'.encode('ascii'))
         else:
             message = '{}: {}'.format(nickname, message)
             client.send(message.encode('ascii'))
