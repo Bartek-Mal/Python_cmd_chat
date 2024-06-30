@@ -35,8 +35,11 @@ def handle(client):
                     "/whisper <nickname> <message> - send a private message\n"
                     "/kick <nickname> - kick a user (admin only)\n"
                     "/ban <nickname> - ban a user (admin only)\n"
+                    "/camera - start camera, press r to turn on/off recording, press q to quit\n"
                 )
                 client.send(help_message.encode('ascii'))
+            elif message == "/camera":
+                client.send('START_CAMERA'.encode('ascii'))
             elif message.startswith("/nick "):
                 new_nickname = message.split(" ", 1)[1]
                 index = clients.index(client)

