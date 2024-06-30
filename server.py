@@ -10,6 +10,7 @@ server.listen()
 
 clients = []
 nicknames = []
+ban_list = []
 
 def broadcast(message):
     for client in clients:
@@ -64,6 +65,18 @@ def handle(client):
                     clients.remove(kick_client)
                     nicknames.remove(nickname_to_kick)
                     broadcast(f'{nickname_to_kick} has been kicked from the server!!'.encode('ascii'))
+            elif message.startswith("/ban ") and nicknames[clients.index(client)] == 'Admin':
+                parts = message.split(" ",1)
+                nickname_to_ban = parts[1]
+                if nickname_to_ban in nicknames:
+                    index = nicknames.index(nickname_to_ban)
+                    ban_client = clients[index]
+                    ban_client.send('You have been banned by the Admin!'.encode('ascii'))
+                    ban_client.close()
+                    ban_list.append(nickname_to_ban)
+                    clients.remove(ban_client)
+                    nicknames.remove(nickname_to_ban)
+                    broadcast(f'{nickname_to_ban} has been banned from the server!!'.encode('ascii'))
             else:
                 broadcast(message.encode('ascii'))
         except:
@@ -72,10 +85,10 @@ def handle(client):
                 clients.remove(client)
                 client.close()
                 nickname = nicknames[index]
-                broadcast('{} left!'.format(nickname).encode('ascii'))
                 nicknames.remove(nickname)
+                broadcast('{} left!'.format(nickname).encode('ascii'))
             break
-
+        
 def receive():
     while True:
         client, address = server.accept()
@@ -83,6 +96,12 @@ def receive():
 
         client.send('NICK'.encode('ascii'))
         nickname = client.recv(1024).decode('ascii')
+        
+        if nickname in ban_list:
+            client.send('You are banned from this server!'.encode('ascii'))
+            client.close()
+            continue
+        
         if nickname == 'Admin':
             client.send('PASS'.encode('ascii'))
             password = client.recv(1024).decode('ascii')
@@ -90,14 +109,14 @@ def receive():
                 client.send('DENIED'.encode('ascii'))
                 client.close()
                 continue
-            
+
         nicknames.append(nickname)
         clients.append(client)
 
         print("Nickname is {}".format(nickname))
         broadcast("{} joined!".format(nickname).encode('ascii'))
         client.send('Connected to server!'.encode('ascii'))
-        
+
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
         

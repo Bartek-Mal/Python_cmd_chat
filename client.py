@@ -23,6 +23,10 @@ def receive():
                 print(message)
                 client.close()
                 break
+            elif message == 'You have been banned by the Admin!':
+                print(message)
+                client.close()
+                break
             else:
                 print(message)
         except:
@@ -50,6 +54,10 @@ def write():
             parts = message.split(" ",1)
             nickname_to_kick = parts[1]
             client.send(f'/kick {nickname_to_kick}'.encode('ascii'))
+        elif message.startswith("/ban ") and nickname == 'Admin':
+            parts = message.split(" ",1)
+            nickname_to_ban = parts[1]
+            client.send(f'/ban {nickname_to_ban}'.encode('ascii'))
         else:
             message = '{}: {}'.format(nickname, message)
             client.send(message.encode('ascii'))
