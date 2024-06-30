@@ -30,6 +30,11 @@ def write():
         elif message.startswith("/nick "):
             new_nickname = message.split(" ", 1)[1]
             client.send(f'/nick {new_nickname}'.encode('ascii'))
+        elif message.startswith("/whisper "):
+            parts = message.split(" ", 2)
+            whisper_to = parts[1]
+            private_message = parts[2]
+            client.send(f'/whisper {whisper_to} {private_message}'.encode('ascii'))
         else:
             message = '{}: {}'.format(nickname, message)
             client.send(message.encode('ascii'))

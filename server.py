@@ -42,6 +42,17 @@ def handle(client):
                 old_nickname = nicknames[index]
                 nicknames[index] = new_nickname
                 broadcast(f'{old_nickname} changed their nickname to {new_nickname}'.encode('ascii'))
+            elif message.startswith("/whisper "):
+                parts = message.split(" ", 2)
+                whisper_to = parts[1]
+                message = parts[2]
+                if whisper_to in nicknames:
+                    whisper_to_index = nicknames.index(whisper_to)
+                    whisper_to_client = clients[whisper_to_index]
+                    sender_index = clients.index(client)
+                    sender_nickname = nicknames[sender_index]
+                    private_message = f"[Whisper from] {sender_nickname}: {message}"
+                    whisper_to_client.send(private_message.encode('ascii'))
             else:
                 broadcast(message.encode('ascii'))
         except:
