@@ -55,10 +55,4 @@ The client connects to the server, allows users to send and receive messages, an
 - `/help` - Show available commands
 - `/camera` - Start camera recording. Press 'r' to toggle recording, 'q' to quit
 
-## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-Feel free to contribute to this project by opening issues or submitting pull requests.
