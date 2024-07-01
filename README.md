@@ -79,10 +79,6 @@ To use the `/camera` command, you need to create an executable from the `camera_
         pip install opencv-python pyaudio wave moviepy
         ```
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ---
 
 Feel free to contribute to this project by opening issues or submitting pull requests.
