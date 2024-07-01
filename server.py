@@ -12,7 +12,15 @@ clients = []
 nicknames = []
 ban_list = []
 
+banned_words = ['badword1', 'badword2']
+
+def filter_message(message):
+    for word in banned_words:
+        message = message.replace(word, '*' * len(word))
+    return message
+
 def broadcast(message):
+    message = filter_message(message.decode('ascii')).encode('ascii')
     for client in clients:
         client.send(message)
         
@@ -36,10 +44,16 @@ def handle(client):
                     "/kick <nickname> - kick a user (admin only)\n"
                     "/ban <nickname> - ban a user (admin only)\n"
                     "/camera - start camera, press r to turn on/off recording, press q to quit\n"
+                    "/voice_start - use it to make voice message\n"
+                    "/voice_stop - use it to stop making voice messages\n"
                 )
                 client.send(help_message.encode('ascii'))
             elif message == "/camera":
                 client.send('START_CAMERA'.encode('ascii'))
+            elif message == "/voice_start":
+                client.send('START_VOICE'.encode('ascii'))
+            elif message == "/voice_stop":
+                client.send('STOP_VOICE'.encode('ascii'))
             elif message.startswith("/nick "):
                 new_nickname = message.split(" ", 1)[1]
                 index = clients.index(client)
@@ -105,13 +119,13 @@ def receive():
             client.close()
             continue
         
-        if nickname == 'Admin':
-            client.send('PASS'.encode('ascii'))
-            password = client.recv(1024).decode('ascii')
-            if password != 'Admin':  
-                client.send('DENIED'.encode('ascii'))
-                client.close()
-                continue
+        # if nickname == 'Admin':
+        #     client.send('PASS'.encode('ascii'))
+        #     password = client.recv(1024).decode('ascii')
+        #     if password != 'Admin':  
+        #         client.send('DENIED'.encode('ascii'))
+        #         client.close()
+        #         continue
 
         nicknames.append(nickname)
         clients.append(client)
