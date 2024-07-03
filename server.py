@@ -46,6 +46,11 @@ def handle(client):
                     "/camera - start camera, press r to turn on/off recording, press q to quit\n"
                     "/voice_start - use it to make voice message\n"
                     "/voice_stop - use it to stop making voice messages\n"
+                    "/minigame - starts minigame\n"
+                    "/scoreboard - show a scoreboard for minigame\n"
+                    "/group <group_name> - creates a group\n"
+                    "/invite_to_group <group_name> <nickname> - invites to group\n"
+                    "/accept_group <group_name> - accept invite to a group\n"
                 )
                 client.send(help_message.encode('ascii'))
             elif message == "/camera":
@@ -54,6 +59,15 @@ def handle(client):
                 client.send('START_VOICE'.encode('ascii'))
             elif message == "/voice_stop":
                 client.send('STOP_VOICE'.encode('ascii'))
+            elif message == "/minigame":
+                client.send('START_MINIGAME'.encode('ascii'))
+            elif message.startswith("/minigame_score"):
+                parts = message.split(" ", 2)
+                nickname = parts[1]
+                score = parts[2]
+                with open('scores.txt', 'a') as f:
+                    f.write(f'{nickname}: {score}\n')
+                broadcast(f"{nickname} scored {score} in a MiniGame!!".encode('ascii'))
             elif message.startswith("/nick "):
                 new_nickname = message.split(" ", 1)[1]
                 index = clients.index(client)
@@ -119,14 +133,6 @@ def receive():
             client.close()
             continue
         
-        # if nickname == 'Admin':
-        #     client.send('PASS'.encode('ascii'))
-        #     password = client.recv(1024).decode('ascii')
-        #     if password != 'Admin':  
-        #         client.send('DENIED'.encode('ascii'))
-        #         client.close()
-        #         continue
-
         nicknames.append(nickname)
         clients.append(client)
 

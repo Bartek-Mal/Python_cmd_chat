@@ -3,6 +3,7 @@ import threading
 import subprocess
 import speech_recognition as sr
 import pyttsx3
+from usable.minigame import minigame
 
 nickname = input("Choose your nickname: ")
 
@@ -16,13 +17,6 @@ def receive():
             message = client.recv(1024).decode('ascii')
             if message == 'NICK':
                 client.send(nickname.encode('ascii'))
-            # elif message == 'PASS':
-            #     password = input("Enter Admin password: ")
-            #     client.send(password.encode('ascii'))
-            # elif message == 'DENIED':
-            #     print("Incorrect password! Connection denied.")
-            #     client.close()
-            #     break
             elif message == 'You have been kicked by the Admin!':
                 print(message)
                 client.close()
@@ -32,7 +26,7 @@ def receive():
                 client.close()
                 break
             elif message == 'START_CAMERA':
-                subprocess.Popen(['./usable/camera_recording.py'])
+                subprocess.Popen(['./usable/camera_recording.exe'])
             elif message == 'START_VOICE':
                 print("Speech to text activated!")
                 voice_to_speech = threading.Thread(target=voice_to_text)
@@ -40,6 +34,10 @@ def receive():
             elif message == 'STOP_VOICE':
                 print("Speech to text deactivated!")
                 run_voice_to_text = False
+            elif message == 'START_MINIGAME':
+                print("Starting the minigame!")
+                score = minigame()
+                client.send(f"/minigame_score {nickname} {score}".encode('ascii'))
             else:
                 print(message)
         except Exception as e:
@@ -78,6 +76,13 @@ def write():
             client.send(message.encode('ascii'))
         elif message == "/voice_stop":
             client.send(message.encode('ascii'))
+        elif message == "/minigame":
+            client.send(message.encode('ascii'))
+        elif message == "/scoreboard":
+            with open("scores.txt","r") as f:
+                for line in f:
+                    line = line.strip()
+                    print(f'{line}')
         else:
             message = '{}: {}'.format(nickname, message)
             client.send(message.encode('ascii'))
@@ -107,8 +112,7 @@ def voice_to_text():
         except sr.UnknownValueError:
             recognizer = sr.Recognizer()
             continue
-    
-    
+
 receive_thread = threading.Thread(target=receive)
 receive_thread.start()
 
