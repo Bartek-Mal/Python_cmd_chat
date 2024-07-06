@@ -27,7 +27,7 @@ The client connects to the server, allows users to send and receive messages, an
 1. **Clone the repository:**
     ```bash
     git clone https://github.com/Bartek-Mal/Python_cmd_chat.git
-    cd chat-application
+    cd into cloned repository
     ```
 
 2. **Run the server:**
