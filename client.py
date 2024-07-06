@@ -4,6 +4,7 @@ import subprocess
 import speech_recognition as sr
 import pyttsx3
 from usable.minigame import minigame
+from usable.snake import snake_game
 
 nickname = input("Choose your nickname: ")
 
@@ -34,9 +35,13 @@ def receive():
             elif message == 'STOP_VOICE':
                 print("Speech to text deactivated!")
                 run_voice_to_text = False
-            elif message == 'START_MINIGAME':
+            elif message == 'START_BALL_MINIGAME':
                 print("Starting the minigame!")
                 score = minigame()
+                client.send(f"/minigame_score {nickname} {score}".encode('ascii'))
+            elif message == 'START_SNAKE_MINIGAME':
+                print("Starting the minigame!")
+                score = snake_game()
                 client.send(f"/minigame_score {nickname} {score}".encode('ascii'))
             else:
                 print(message)
@@ -76,7 +81,9 @@ def write():
             client.send(message.encode('ascii'))
         elif message == "/voice_stop":
             client.send(message.encode('ascii'))
-        elif message == "/minigame":
+        elif message == "/ball_minigame":
+            client.send(message.encode('ascii'))
+        elif message == "/snake_minigame":
             client.send(message.encode('ascii'))
         elif message == "/scoreboard":
             with open("scores.txt","r") as f:

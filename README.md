@@ -12,7 +12,7 @@ This repository contains a simple multi-client chat application implemented usin
 - **Help Command:** Provides a list of available commands using `/help`.
 - **Video Recording:** Clients can start video recording using the `/camera` command.
 - **Voice-to-Text:** Clients can start and stop voice-to-text using the `/voice_start` and `/voice_stop` commands.
-- **Mini-Game:** Clients can start a mini-game using the `/minigame` command and view the scoreboard using `/scoreboard`.
+- **Mini-Game:** Clients can start mini-games using the `/snake_minigame` and `/ball_minigame` commands and view the scoreboard using `/scoreboard`.
 
 ## Server
 
@@ -58,7 +58,8 @@ The client connects to the server, allows users to send and receive messages, an
 - `/camera` - Start camera recording. Press 'r' to toggle recording, 'q' to quit
 - `/voice_start` - Start voice-to-text
 - `/voice_stop` - Stop voice-to-text
-- `/minigame` - Start a mini-game
+- `/snake_minigame` - Start a snake mini-game
+- `/ball_minigame` - Start a shooting mini-game 
 - `/scoreboard` - Show the scoreboard for the mini-game
 - `/group <group_name>` - Create a group
 - `/invite_to_group <group_name> <nickname>` - Invite a user to a group

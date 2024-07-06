@@ -46,7 +46,8 @@ def handle(client):
                     "/camera - start camera, press r to turn on/off recording, press q to quit\n"
                     "/voice_start - use it to make voice message\n"
                     "/voice_stop - use it to stop making voice messages\n"
-                    "/minigame - starts minigame\n"
+                    "/ball_minigame - starts minigame\n"
+                    "/snake_minigame - starts minigame\n"
                     "/scoreboard - show a scoreboard for minigame\n"
                     "/group <group_name> - creates a group\n"
                     "/invite_to_group <group_name> <nickname> - invites to group\n"
@@ -59,8 +60,10 @@ def handle(client):
                 client.send('START_VOICE'.encode('ascii'))
             elif message == "/voice_stop":
                 client.send('STOP_VOICE'.encode('ascii'))
-            elif message == "/minigame":
-                client.send('START_MINIGAME'.encode('ascii'))
+            elif message == "/ball_minigame":
+                client.send('START_BALL_MINIGAME'.encode('ascii'))
+            elif message == "/snake_minigame":
+                client.send('START_SNAKE_MINIGAME'.encode('ascii'))
             elif message.startswith("/minigame_score"):
                 parts = message.split(" ", 2)
                 nickname = parts[1]
