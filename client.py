@@ -38,11 +38,11 @@ def receive():
             elif message == 'START_BALL_MINIGAME':
                 print("Starting the minigame!")
                 score = minigame()
-                client.send(f"/minigame_score {nickname} {score}".encode('ascii'))
+                client.send(f"/minigame_score {nickname} {score} ball_minigame".encode('ascii'))
             elif message == 'START_SNAKE_MINIGAME':
                 print("Starting the minigame!")
                 score = snake_game()
-                client.send(f"/minigame_score {nickname} {score}".encode('ascii'))
+                client.send(f"/minigame_score {nickname} {score} snake_minigame".encode('ascii'))
             else:
                 print(message)
         except Exception as e:
@@ -90,6 +90,22 @@ def write():
                 for line in f:
                     line = line.strip()
                     print(f'{line}')
+        elif message.startswith("/group "):
+            group_name = message.split(" ", 1)[1]
+            client.send(f'/group {group_name}'.encode('ascii'))
+        elif message.startswith("/invite_to_group "):
+            parts = message.split(" ", 2)
+            group_name = parts[1]
+            nickname_to_invite = parts[2]
+            client.send(f'/invite_to_group {group_name} {nickname_to_invite}'.encode('ascii'))
+        elif message.startswith("/accept_group "):
+            group_name = message.split(" ", 1)[1]
+            client.send(f'/accept_group {group_name}'.encode('ascii'))
+        elif message.startswith("/group_message "):
+            parts = message.split(" ", 2)
+            group_name = parts[1]
+            group_message = parts[2]
+            client.send(f'/group_message {group_name} {group_message}'.encode('ascii'))
         else:
             message = '{}: {}'.format(nickname, message)
             client.send(message.encode('ascii'))

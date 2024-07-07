@@ -11,6 +11,7 @@ server.listen()
 clients = []
 nicknames = []
 ban_list = []
+groups = {}  
 
 banned_words = ['badword1', 'badword2']
 
@@ -52,6 +53,7 @@ def handle(client):
                     "/group <group_name> - creates a group\n"
                     "/invite_to_group <group_name> <nickname> - invites to group\n"
                     "/accept_group <group_name> - accept invite to a group\n"
+                    "/group_message <group_name> <message> - send a message to the group\n"
                 )
                 client.send(help_message.encode('ascii'))
             elif message == "/camera":
@@ -65,11 +67,12 @@ def handle(client):
             elif message == "/snake_minigame":
                 client.send('START_SNAKE_MINIGAME'.encode('ascii'))
             elif message.startswith("/minigame_score"):
-                parts = message.split(" ", 2)
+                parts = message.split(" ", 3)
                 nickname = parts[1]
                 score = parts[2]
+                game = parts[3]
                 with open('scores.txt', 'a') as f:
-                    f.write(f'{nickname}: {score}\n')
+                    f.write(f'{game} {nickname}: {score}\n')
                 broadcast(f"{nickname} scored {score} in a MiniGame!!".encode('ascii'))
             elif message.startswith("/nick "):
                 new_nickname = message.split(" ", 1)[1]
@@ -111,6 +114,40 @@ def handle(client):
                     clients.remove(ban_client)
                     nicknames.remove(nickname_to_ban)
                     broadcast(f'{nickname_to_ban} has been banned from the server!!'.encode('ascii'))
+            elif message.startswith("/group "):
+                group_name = message.split(" ", 1)[1]
+                if group_name not in groups:
+                    groups[group_name] = [client]
+                    client.send(f'Group {group_name} created!'.encode('ascii'))
+                else:
+                    client.send(f'Group {group_name} already exists.'.encode('ascii'))
+            elif message.startswith("/invite_to_group "):
+                parts = message.split(" ", 2)
+                group_name = parts[1]
+                nickname_to_invite = parts[2]
+                if group_name in groups and nickname_to_invite in nicknames:
+                    index = nicknames.index(nickname_to_invite)
+                    invite_client = clients[index]
+                    groups[group_name].append(invite_client)
+                    invite_client.send(f'You have been invited to the group {group_name}'.encode('ascii'))
+                else:
+                    client.send(f'Group {group_name} does not exist or nickname not found.'.encode('ascii'))
+            elif message.startswith("/accept_group "):
+                group_name = message.split(" ", 1)[1]
+                if group_name in groups and client in groups[group_name]:
+                    client.send(f'You have joined the group {group_name}'.encode('ascii'))
+                else:
+                    client.send(f'Group {group_name} does not exist or you are not invited.'.encode('ascii'))
+            elif message.startswith("/group_message "):
+                parts = message.split(" ", 2)
+                group_name = parts[1]
+                group_message = parts[2]
+                if group_name in groups and client in groups[group_name]:
+                    for member in groups[group_name]:
+                        if member != client:
+                            member.send(f'[Group {group_name}] {nicknames[clients.index(client)]}: {group_message}'.encode('ascii'))
+                else:
+                    client.send(f'Group {group_name} does not exist or you are not a member.'.encode('ascii'))
             else:
                 broadcast(message.encode('ascii'))
         except:
